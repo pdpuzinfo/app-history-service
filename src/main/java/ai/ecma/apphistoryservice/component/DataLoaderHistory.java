@@ -22,6 +22,7 @@ public class DataLoaderHistory implements CommandLineRunner {
             HistoryAssistenceService bean = BeanUtilHistory.getBean(HistoryAssistenceService.class);
         }catch (Exception e){
             System.err.println("implementation of history assistance bean service is requeired!!!");
+            System.exit(1);
             throw e;
         }
     }

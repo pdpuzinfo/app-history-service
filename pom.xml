@@ -12,7 +12,7 @@
 <!--    <groupId>ai.ecma</groupId>-->
     <groupId>ai.ecma</groupId>
     <artifactId>app-history-service</artifactId>
-    <version>v2023-03-29</version>
+    <version>v2023-03-29-v1</version>
     <name>app-history-service</name>
     <description>app-history-service</description>
     <properties>
@@ -62,5 +62,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>pdpuzinfo</name>
+            <url>https://maven.pkg.github.com/pdpuzinfo/app-history-service</url>
+        </repository>
+    </distributionManagement>
 
 </project>
