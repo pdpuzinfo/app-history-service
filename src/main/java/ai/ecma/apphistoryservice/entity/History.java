@@ -71,6 +71,10 @@ public class History extends AbsUUIDUserAuditEntity {
         return CommonUtils.readObject(rowId, rowIdClassName);
     }
 
+    public String getRowIdStr(){
+        return rowId;
+    }
+
     public void setRowId(Object rowId) {
         this.rowId = CommonUtils.toJson(rowId);
     }
@@ -79,8 +83,16 @@ public class History extends AbsUUIDUserAuditEntity {
         return CommonUtils.readObject(before, entityClassName);
     }
 
+    public String getBeforeStr(){
+        return before;
+    }
+
     public void setBefore(Object before) {
         this.before = CommonUtils.toJson(before);
+    }
+
+    public String getAfterStr(){
+        return after;
     }
 
     public <T> T getAfter() {
@@ -95,11 +107,11 @@ public class History extends AbsUUIDUserAuditEntity {
         return Arrays.stream(changedFields).collect(Collectors.toList());
     }
 
-    public void setChangedFields(List<String> changedFields) {
+    public void setChangedFields(Set<String> changedFields) {
         this.changedFields = changedFields.toArray(new String[0]);
     }
 
-    public History(String rowId, String rowIdClassName, String entityName, String entityClassName, List<String> changedFields, Object before, Object after, ActionTypeEnum actionType, Set<String> ignoredFields, UUID createdById) {
+    public History(String rowId, String rowIdClassName, String entityName, String entityClassName, Set<String> changedFields, Object before, Object after, ActionTypeEnum actionType, Set<String> ignoredFields, UUID createdById) {
         this.rowId = rowId;
         this.rowIdClassName = rowIdClassName;
         this.entityName = entityName;

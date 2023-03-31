@@ -12,13 +12,14 @@
 <!--    <groupId>ai.ecma</groupId>-->
     <groupId>ai.ecma</groupId>
     <artifactId>app-history-service</artifactId>
-    <version>v2023-03-29-v1</version>
+    <version>2023-03-31-v13</version>
     <name>app-history-service</name>
     <description>app-history-service</description>
     <properties>
         <java.version>11</java.version>
     </properties>
     <dependencies>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

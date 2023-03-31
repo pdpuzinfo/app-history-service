@@ -1,6 +1,9 @@
 package ai.ecma.apphistoryservice.utils;
 
 import ai.ecma.apphistoryservice.aop.AuditField;
+import ai.ecma.apphistoryservice.component.BeanUtilHistory;
+import ai.ecma.apphistoryservice.test.TestEntityDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +13,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.core.env.Environment;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 
 public class CommonUtils {
     public static final ObjectMapper objectMapper = new ObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    public static final String enabledVarName = "history-service-enabled";
 
     public static String camelToSnake(String camelCase) {
         StringBuilder snakeCase = new StringBuilder();
@@ -44,35 +49,29 @@ public class CommonUtils {
         if (Objects.isNull(table) && Objects.isNull(entity))
             return CommonUtils.camelToSnake(aClass.getSimpleName());
 
-        String name = "";
-
         //TABLE DAN NAME NI OLADI YOKI SNEAK CASE
         if (Objects.nonNull(table)) {
             String tableName = table.name();
-            if (tableName.isBlank() || tableName.isEmpty())
-                name = CommonUtils.camelToSnake(aClass.getSimpleName());
-            else
-                return name;
+            if (!tableName.isBlank() && !tableName.isEmpty())
+                return tableName;
         }
 
         //ENTITY DAN NAME NI OLADI YOKI SNEAK CASE
         if (Objects.nonNull(entity)) {
             String entityName = entity.name();
-            if (entityName.isEmpty() || entityName.isBlank())
-                name = CommonUtils.camelToSnake(aClass.getSimpleName());
-            else
-                return name;
+            if (!entityName.isEmpty() && entityName.isBlank())
+                return entityName;
         }
 
-        return name;
+        return CommonUtils.camelToSnake(aClass.getSimpleName());
     }
 
     public static String getRowId(Object object) {
         try {
-            Field field = object.getClass().getDeclaredField(AppConstant.ID);
+            Field field = getIdField(object.getClass());
             field.setAccessible(true);
-            return field.get(object).toString();
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return objectMapper.writeValueAsString(field.get(object));
+        } catch (IllegalAccessException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -162,7 +161,6 @@ public class CommonUtils {
 
             return objectMapper.readValue(json, javaType);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -189,7 +187,7 @@ public class CommonUtils {
 
             return objectMapper.writeValueAsString(node);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return null;
         }
     }
@@ -244,7 +242,7 @@ public class CommonUtils {
             return null;
 
         //AGAR OBJECT KELSA ICHIDAN ID FIELDINI OLAMIZ
-        Field beforeRelationIdField = relationObj.getClass().getDeclaredField(AppConstant.ID);
+        Field beforeRelationIdField = getIdField(relationObj.getClass());
         beforeRelationIdField.setAccessible(true);
         return beforeRelationIdField.get(relationObj);
     }
@@ -337,5 +335,183 @@ public class CommonUtils {
         return allFields.stream().map(Field::getName).collect(Collectors.toSet());
     }
 
+    public static Field getIdField(Class clazz) {
+        Optional<Field> optionalIdField = Arrays.stream(clazz.getDeclaredFields()).filter(field -> Objects.equals(field.getName(), AppConstant.ID))
+                .findFirst();
+        if (optionalIdField.isPresent())
+            return optionalIdField.get();
 
+        return getIdFieldFromSuperClass(clazz);
+    }
+
+    private static Field getIdFieldFromSuperClass(Class clazz) {
+        Class superclass = clazz.getSuperclass();
+        if (superclass.equals(Object.class))
+            throw new RuntimeException("can not field id field");
+        return getIdField(superclass);
+    }
+
+
+    public static boolean arraysEquals(boolean[] before, boolean[] after) {
+        List<Boolean> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (boolean b : before)
+                beforeList.add(b);
+        }
+
+        List<Boolean> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (boolean b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(char[] before, char[] after) {
+        List<Character> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (char b : before)
+                beforeList.add(b);
+        }
+
+        List<Character> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (char b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(double[] before, double[] after) {
+        List<Double> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (double b : before)
+                beforeList.add(b);
+        }
+
+        List<Double> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (double b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(float[] before, float[] after) {
+        List<Float> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (float b : before)
+                beforeList.add(b);
+        }
+
+        List<Float> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (float b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(long[] before, long[] after) {
+        List<Long> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (long b : before)
+                beforeList.add(b);
+        }
+
+        List<Long> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (long b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(int[] before, int[] after) {
+        List<Integer> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (int b : before)
+                beforeList.add(b);
+        }
+
+        List<Integer> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (int b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(short[] before, short[] after) {
+        List<Short> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (short b : before)
+                beforeList.add(b);
+        }
+
+        List<Short> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (short b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(byte[] before, byte[] after) {
+
+        List<Byte> beforeList = new ArrayList<>();
+        if (Objects.nonNull(before)){
+            for (byte b : before)
+                beforeList.add(b);
+        }
+
+        List<Byte> afterList = new ArrayList<>();
+        if (Objects.nonNull(after)){
+            for (byte b : after)
+                afterList.add(b);
+        }
+
+        return beforeList.containsAll(afterList);
+    }
+
+    public static boolean arraysEquals(Object[] before, Object[] after) {
+        List beforeList = new ArrayList();
+        if (Objects.nonNull(before)){
+            beforeList.addAll(Arrays.asList(before));
+        }
+        List afterList = new ArrayList();
+        if (Objects.nonNull(after)){
+            afterList.addAll(Arrays.asList(after));
+        }
+        return afterList.containsAll(beforeList);
+    }
+
+    public static Object cloneEntity(Object object) {
+        try {
+            Method method = object.getClass().getMethod("clone");
+            return method.invoke(object);
+        }catch (Exception e){
+            System.err.println("Class not implement Cloneable interface");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean historyDisabled() {
+        Environment environment = BeanUtilHistory.getBean(Environment.class);
+        if (environment.containsProperty(enabledVarName)) {
+            try {
+                return !"true".equalsIgnoreCase(environment.getProperty(enabledVarName));
+            } catch (Exception e) {
+                return true;
+            }
+        }
+        return true;
+    }
 }
