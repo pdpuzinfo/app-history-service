@@ -12,7 +12,7 @@
 <!--    <groupId>ai.ecma</groupId>-->
     <groupId>ai.ecma</groupId>
     <artifactId>app-history-service</artifactId>
-    <version>2023-03-31-v13</version>
+    <version>2023-04-03-v1</version>
     <name>app-history-service</name>
     <description>app-history-service</description>
     <properties>

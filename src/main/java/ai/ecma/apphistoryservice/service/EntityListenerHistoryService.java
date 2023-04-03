@@ -7,7 +7,6 @@ import ai.ecma.apphistoryservice.repository.HistoryRepository;
 import ai.ecma.apphistoryservice.utils.AppConstant;
 import ai.ecma.apphistoryservice.utils.CommonUtils;
 import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.PostLoad;
@@ -18,6 +17,7 @@ import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -306,7 +306,13 @@ public class EntityListenerHistoryService {
             //SQL DATE UCHUN BOSHQA LOGIKA
             if (fieldType.equals(Date.class)) {
 
-                if (dateEquals(before, after))
+                if (sqlDateEquals(before, after))
+                    continue;
+
+                //util date EQUALS METHODI
+            } else if (fieldType.equals(java.util.Date.class)) {
+
+                if (utilDateEquals(before, after))
                     continue;
 
                 //ARRAY EQUALS METHODI
@@ -326,9 +332,15 @@ public class EntityListenerHistoryService {
     }
 
 
-    private boolean dateEquals(Object before, Object after) {
+    private boolean sqlDateEquals(Object before, Object after) {
         LocalDate beforeLocal = Objects.isNull(before) ? null : ((Date) before).toLocalDate();
         LocalDate afterLocal = Objects.isNull(after) ? null : ((Date) after).toLocalDate();
+        return Objects.equals(beforeLocal, afterLocal);
+    }
+
+    private boolean utilDateEquals(Object before, Object after) {
+        LocalDate beforeLocal = Objects.isNull(before) ? null : ((java.util.Date) before).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate afterLocal = Objects.isNull(after) ? null : ((java.util.Date) after).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         return Objects.equals(beforeLocal, afterLocal);
     }
 
