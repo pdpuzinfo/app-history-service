@@ -61,7 +61,8 @@ public class EntityListenerHistoryService {
                     afterObj,
                     actionType,
                     ignoredFields,
-                    historyAssistenceService.currentUserId()
+                    historyAssistenceService.currentUserId(),
+                    CommonUtils.getApi()
             );
 
             //TRANSACTION TUGAGANDAN KEYIN SAVE QILINADI
@@ -162,7 +163,8 @@ public class EntityListenerHistoryService {
                     null,
                     actionType,
                     ignoredFields,
-                    historyAssistenceService.currentUserId()
+                    historyAssistenceService.currentUserId(),
+                    CommonUtils.getApi()
             );
 
             save(history);
@@ -281,7 +283,8 @@ public class EntityListenerHistoryService {
                     afterObj,
                     actionType,
                     ignoredFields,
-                    historyAssistenceService.currentUserId()
+                    historyAssistenceService.currentUserId(),
+                    CommonUtils.getApi()
             );
 
             save(history);

@@ -54,6 +54,10 @@ public class History extends AbsUUIDUserAuditEntity {
     @Enumerated(EnumType.STRING)
     private ActionTypeEnum actionType;
 
+    //AGAR REQUEST KELGAN BO'LSA QAYSI API DAN KELGANI
+    @Column(columnDefinition = "text")
+    private String api;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,7 +75,7 @@ public class History extends AbsUUIDUserAuditEntity {
         return CommonUtils.readObject(rowId, rowIdClassName);
     }
 
-    public String getRowIdStr(){
+    public String getRowIdStr() {
         return rowId;
     }
 
@@ -83,7 +87,7 @@ public class History extends AbsUUIDUserAuditEntity {
         return CommonUtils.readObject(before, entityClassName);
     }
 
-    public String getBeforeStr(){
+    public String getBeforeStr() {
         return before;
     }
 
@@ -91,7 +95,7 @@ public class History extends AbsUUIDUserAuditEntity {
         this.before = CommonUtils.toJson(before);
     }
 
-    public String getAfterStr(){
+    public String getAfterStr() {
         return after;
     }
 
@@ -111,7 +115,7 @@ public class History extends AbsUUIDUserAuditEntity {
         this.changedFields = changedFields.toArray(new String[0]);
     }
 
-    public History(String rowId, String rowIdClassName, String entityName, String entityClassName, Set<String> changedFields, Object before, Object after, ActionTypeEnum actionType, Set<String> ignoredFields, UUID createdById) {
+    public History(String rowId, String rowIdClassName, String entityName, String entityClassName, Set<String> changedFields, Object before, Object after, ActionTypeEnum actionType, Set<String> ignoredFields, UUID createdById, String api) {
         this.rowId = rowId;
         this.rowIdClassName = rowIdClassName;
         this.entityName = entityName;
@@ -121,5 +125,6 @@ public class History extends AbsUUIDUserAuditEntity {
         this.after = CommonUtils.toJsonWithoutIgnoreFields(after, ignoredFields);
         this.actionType = actionType;
         this.setCreatedById(createdById);
+        this.api = api;
     }
 }

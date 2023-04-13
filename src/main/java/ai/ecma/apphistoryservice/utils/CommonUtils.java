@@ -14,8 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.core.env.Environment;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.persistence.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -354,13 +357,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(boolean[] before, boolean[] after) {
         List<Boolean> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (boolean b : before)
                 beforeList.add(b);
         }
 
         List<Boolean> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (boolean b : after)
                 afterList.add(b);
         }
@@ -370,13 +373,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(char[] before, char[] after) {
         List<Character> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (char b : before)
                 beforeList.add(b);
         }
 
         List<Character> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (char b : after)
                 afterList.add(b);
         }
@@ -386,13 +389,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(double[] before, double[] after) {
         List<Double> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (double b : before)
                 beforeList.add(b);
         }
 
         List<Double> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (double b : after)
                 afterList.add(b);
         }
@@ -402,13 +405,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(float[] before, float[] after) {
         List<Float> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (float b : before)
                 beforeList.add(b);
         }
 
         List<Float> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (float b : after)
                 afterList.add(b);
         }
@@ -418,13 +421,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(long[] before, long[] after) {
         List<Long> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (long b : before)
                 beforeList.add(b);
         }
 
         List<Long> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (long b : after)
                 afterList.add(b);
         }
@@ -434,13 +437,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(int[] before, int[] after) {
         List<Integer> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (int b : before)
                 beforeList.add(b);
         }
 
         List<Integer> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (int b : after)
                 afterList.add(b);
         }
@@ -450,13 +453,13 @@ public class CommonUtils {
 
     public static boolean arraysEquals(short[] before, short[] after) {
         List<Short> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (short b : before)
                 beforeList.add(b);
         }
 
         List<Short> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (short b : after)
                 afterList.add(b);
         }
@@ -467,13 +470,13 @@ public class CommonUtils {
     public static boolean arraysEquals(byte[] before, byte[] after) {
 
         List<Byte> beforeList = new ArrayList<>();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             for (byte b : before)
                 beforeList.add(b);
         }
 
         List<Byte> afterList = new ArrayList<>();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             for (byte b : after)
                 afterList.add(b);
         }
@@ -483,11 +486,11 @@ public class CommonUtils {
 
     public static boolean arraysEquals(Object[] before, Object[] after) {
         List beforeList = new ArrayList();
-        if (Objects.nonNull(before)){
+        if (Objects.nonNull(before)) {
             beforeList.addAll(Arrays.asList(before));
         }
         List afterList = new ArrayList();
-        if (Objects.nonNull(after)){
+        if (Objects.nonNull(after)) {
             afterList.addAll(Arrays.asList(after));
         }
         return afterList.containsAll(beforeList);
@@ -497,7 +500,7 @@ public class CommonUtils {
         try {
             Method method = object.getClass().getMethod("clone");
             return method.invoke(object);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.err.println("Class not implement Cloneable interface");
             throw new RuntimeException(e);
         }
@@ -513,5 +516,19 @@ public class CommonUtils {
             }
         }
         return true;
+    }
+
+    //QAYSI API GA KELAYOTGANINI YOZIB QO'YADI
+    public static String getApi() {
+        try {
+            ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = Optional.ofNullable(servletRequestAttributes).map(ServletRequestAttributes::getRequest).orElse(null);
+            if (Objects.isNull(request))
+                return null;
+            return request.getServletPath();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
